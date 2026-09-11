@@ -1,0 +1,135 @@
+<style>
+/* Default state */
+.label-container-15,
+.label-container-16,
+.label-container-17 {
+    background-color: #121428 !important;
+    cursor: pointer;
+}
+
+.label-container-15 .label-text-15,
+.label-container-16 .label-text-16,
+.label-container-17 .label-text-17 {
+    color: #FFFFFF;
+}
+
+/* Time containers hidden by default */
+.time-container-15,
+.time-container-16,
+.time-container-17 {
+    display: none;
+    overflow: hidden;
+	  gap: 40px !important;
+}
+
+/* Active state */
+.label-container-15.active,
+.label-container-16.active,
+.label-container-17.active {
+    background-color: #88BEDD !important;
+}
+
+.label-container-15.active .label-text-15,
+.label-container-16.active .label-text-16,
+.label-container-17.active .label-text-17 {
+    color: #FFFFFF;
+}
+
+/* Open animation */
+.time-container-15.active,
+.time-container-16.active,
+.time-container-17.active {
+    display: flex;
+	  flex-direction: column;
+    animation: timeContainerOpen 0.35s ease forwards;
+}
+
+@keyframes timeContainerOpen {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // Returns 15/16/17 if today is actually that program day, else null.
+    function getCurrentProgramDay() {
+        const now = new Date();
+
+        // September 2026
+        const year = now.getFullYear();
+        const month = now.getMonth(); // September = 8
+        const date = now.getDate();
+
+        if (year === 2026 && month === 8 && [15, 16, 17].includes(date)) {
+            return date;
+        }
+        return null;
+    }
+
+    // Tracks whichever day is currently forced open by the real date,
+    // so clicks can know to leave it alone and so we only touch the
+    // DOM when the active day actually changes (never on every tick,
+    // which would otherwise stomp on the user's manual toggles of the
+    // other containers).
+    let currentProgramDay = null;
+
+    function syncTodayContainer() {
+        const todayDay = getCurrentProgramDay();
+        if (todayDay === currentProgramDay) {
+            return;
+        }
+
+        // The previous "today" (if any) reverts to a normal container
+        // that the user can freely open/close by clicking.
+        if (currentProgramDay) {
+            const prevLabel = document.querySelector('.label-container-' + currentProgramDay);
+            const prevTime = document.querySelector('.time-container-' + currentProgramDay);
+            if (prevLabel) prevLabel.classList.remove('active');
+            if (prevTime) prevTime.classList.remove('active');
+        }
+
+        currentProgramDay = todayDay;
+
+        if (todayDay) {
+            const label = document.querySelector('.label-container-' + todayDay);
+            const time = document.querySelector('.time-container-' + todayDay);
+            if (label) label.classList.add('active');
+            if (time) time.classList.add('active');
+        }
+    }
+
+    // Run immediately, then check every minute so it switches over
+    // automatically when a new program day arrives.
+    syncTodayContainer();
+    setInterval(syncTodayContainer, 60000);
+
+    // Clicking a label toggles just its own container open/closed,
+    // independently of the others - except today's, which always
+    // stays open and ignores clicks entirely.
+    [15, 16, 17].forEach(function (day) {
+        const label = document.querySelector('.label-container-' + day);
+        const time = document.querySelector('.time-container-' + day);
+        if (!label) return;
+
+        label.addEventListener('click', function () {
+            if (day === currentProgramDay) {
+                return;
+            }
+
+            label.classList.toggle('active');
+            if (time) time.classList.toggle('active');
+        });
+    });
+
+});
+</script>
