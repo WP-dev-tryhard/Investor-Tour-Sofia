@@ -1,0 +1,181 @@
+<style>
+/* =========================
+   INACTIVE STATES
+   ========================= */
+
+.all-projects-btn.inactive {
+    background-color: #FFFFFF !important;
+    border-color: #7E7E7E !important;
+}
+
+.all-projects-btn.inactive .all-projects-text {
+    color: #7E7E7E !important;
+}
+
+
+.see-projects-btn.inactive {
+    background-color: #FFFFFF !important;
+    border-color: #44322C !important;
+}
+
+.see-projects-btn.inactive .see-projects-text {
+    color: #44322C !important;
+}
+
+
+.srd-projects-btn.inactive {
+    background-color: #FFFFFF !important;
+    border-color: #15624C !important;
+}
+
+.srd-projects-btn.inactive .srd-projects-text {
+    color: #15624C !important;
+}
+
+
+.srdl-projects-btn.inactive {
+    background-color: #FFFFFF !important;
+    border-color: #AB9A6F !important;
+}
+
+.srdl-projects-btn.inactive .srdl-projects-text {
+    color: #AB9A6F !important;
+}
+
+
+/* =========================
+   ACTIVE STATES
+   ========================= */
+
+.all-projects-btn.active {
+    background-color: #7E7E7E !important;
+    border-color: #7E7E7E !important;
+}
+
+.all-projects-btn.active .all-projects-text {
+    color: #FFFFFF !important;
+}
+
+
+.see-projects-btn.active {
+    background-color: #44322C !important;
+    border-color: #44322C !important;
+}
+
+.see-projects-btn.active .see-projects-text {
+    color: #FFFFFF !important;
+}
+
+
+.srd-projects-btn.active {
+    background-color: #15624C !important;
+    border-color: #15624C !important;
+}
+
+.srd-projects-btn.active .srd-projects-text {
+    color: #FFFFFF !important;
+}
+
+
+.srdl-projects-btn.active {
+    background-color: #AB9A6F !important;
+    border-color: #AB9A6F !important;
+}
+
+.srdl-projects-btn.active .srdl-projects-text {
+    color: #FFFFFF !important;
+}
+
+
+/* =========================
+   TRANSITIONS
+   ========================= */
+
+.all-projects-btn,
+.see-projects-btn,
+.srd-projects-btn,
+.srdl-projects-btn {
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.all-projects-text,
+.see-projects-text,
+.srd-projects-text,
+.srdl-projects-text {
+    transition: color 0.25s ease;
+}
+</style>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const filters = [
+        {
+            button: '.all-projects-btn',
+            project: '.see-project, .srd-project, .srdl-project, .no-project'
+        },
+        {
+            button: '.see-projects-btn',
+            project: '.see-project'
+        },
+        {
+            button: '.srd-projects-btn',
+            project: '.srd-project'
+        },
+        {
+            button: '.srdl-projects-btn',
+            project: '.srdl-project'
+        }
+    ];
+
+    filters.forEach(function (filter) {
+
+        const button = document.querySelector(filter.button);
+
+        if (!button) return;
+
+        button.addEventListener('click', function () {
+
+            /* Switch all buttons to inactive */
+            filters.forEach(function (item) {
+
+                const btn = document.querySelector(item.button);
+
+                if (!btn) return;
+
+                btn.classList.remove('active');
+                btn.classList.add('inactive');
+
+            });
+
+            /* Make clicked button active */
+            button.classList.remove('inactive');
+            button.classList.add('active');
+
+
+            /* Hide ALL project elements */
+            document.querySelectorAll(
+                '.see-project, .srd-project, .srdl-project, .no-project'
+            ).forEach(function (project) {
+
+                project.style.display = 'none';
+
+            });
+
+
+            /* Show selected project elements */
+            document.querySelectorAll(filter.project).forEach(function (project) {
+
+                project.style.display = '';
+
+            });
+
+        });
+
+    });
+
+});
+</script>
