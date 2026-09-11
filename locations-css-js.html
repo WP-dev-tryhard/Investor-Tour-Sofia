@@ -1,0 +1,112 @@
+<style>
+/* =========================
+   MAPS
+   ========================= */
+
+/* Active map */
+.all-ejendomme-map.active,
+.see-ejendomme-map.active,
+.srd-ejendomme-map.active,
+.srdlh-ejendomme-map.active {
+    position: static !important;
+    display: block;
+}
+
+
+/* Inactive maps */
+.all-ejendomme-map.inactive,
+.see-ejendomme-map.inactive,
+.srd-ejendomme-map.inactive,
+.srdlh-ejendomme-map.inactive {
+    position: absolute;
+    display: none;
+}
+
+
+/* =========================
+   BUTTON TEXT
+   ========================= */
+
+.all-ejendomme-button.inactive p,
+.see-ejendomme-button.inactive p,
+.srd-ejendomme-button.inactive p,
+.srdlh-ejendomme-button.inactive p {
+    font-weight: 300;
+}
+
+.all-ejendomme-button.active p,
+.see-ejendomme-button.active p,
+.srd-ejendomme-button.active p,
+.srdlh-ejendomme-button.active p {
+    font-weight: 700;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const filters = [
+        {
+            button: '.all-ejendomme-button',
+            map: '.all-ejendomme-map'
+        },
+        {
+            button: '.see-ejendomme-button',
+            map: '.see-ejendomme-map'
+        },
+        {
+            button: '.srd-ejendomme-button',
+            map: '.srd-ejendomme-map'
+        },
+        {
+            button: '.srdlh-ejendomme-button',
+            map: '.srdlh-ejendomme-map'
+        }
+    ];
+
+    filters.forEach(function (filter) {
+
+        const button = document.querySelector(filter.button);
+
+        if (!button) return;
+
+        button.addEventListener('click', function () {
+
+            /* Reset all buttons and maps */
+            filters.forEach(function (item) {
+
+                const btn = document.querySelector(item.button);
+                const map = document.querySelector(item.map);
+
+                if (btn) {
+                    btn.classList.remove('active');
+                    btn.classList.add('inactive');
+                }
+
+                if (map) {
+                    map.classList.remove('active');
+                    map.classList.add('inactive');
+                }
+
+            });
+
+
+            /* Activate clicked button */
+            button.classList.remove('inactive');
+            button.classList.add('active');
+
+
+            /* Activate corresponding map */
+            const activeMap = document.querySelector(filter.map);
+
+            if (activeMap) {
+                activeMap.classList.remove('inactive');
+                activeMap.classList.add('active');
+            }
+
+        });
+
+    });
+
+});
+</script>
