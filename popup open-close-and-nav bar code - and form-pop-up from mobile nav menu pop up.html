@@ -1,0 +1,555 @@
+<!--- Code 1 -->
+<style>
+#headerWrappervITS {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 999 !important;
+  transition: transform 0.15s ease-in-out !important;
+  will-change: transform;
+}
+	
+@media (max-width: 1200px) {
+#headerWrappervITS {
+		z-index: 99999 !important;
+	}
+}
+#headerWrappervITS.nav-hidden {
+  transform: translateY(-153px) !important;
+}
+main {
+  margin-top: 217px !important;
+  transition: margin-top 0.15s ease-in-out !important;
+}
+.nav-hidden-content {
+  margin-top: 153px !important; /* original 153 */
+}
+.nav-hidden-content-tablet {
+  margin-top: 100px !important; /* original 100 */
+}
+.nav-hidden-content-mobile {
+  margin-top: 0px !important; /* original 100 */
+}
+	
+@media (max-width: 1200px) {
+	main {
+		margin-top: 0px !important; /* original 153 */
+		transition: margin-top 0.15s ease-in-out !important;
+	}
+}
+	
+@media (max-width: 767px) {
+	main {
+		margin-top: 0px !important; /* original 139 */
+		transition: margin-top 0.15s ease-in-out !important;
+	}
+}
+
+/* --- New: scroll-past-10px state --- */
+.nav-bar-logo-white,
+.nav-bar-logo-blue {
+  position: absolute !important;
+}
+
+/* n-bar0 now gets scrolled-10 directly, not via header ancestor */
+.n-bar0.scrolled-10 {
+  background-color: #ffffff !important;
+}
+
+#headerWrapperv3.scrolled-10 .menu-btn__burger,
+#headerWrappervITS.scrolled-10 .menu-btn__burger {
+  background: #172643 !important;
+}
+#headerWrapperv3.scrolled-10 .menu-btn__burger::before,
+#headerWrappervITS.scrolled-10 .menu-btn__burger::before,
+#headerWrapperv3.scrolled-10 .menu-btn__burger::after,
+#headerWrappervITS.scrolled-10 .menu-btn__burger::after {
+  background: #172643 !important;
+}
+
+#headerWrapperv3.scrolled-10 .nav-bar-logo-white,
+#headerWrappervITS.scrolled-10 .nav-bar-logo-white {
+  display: none !important;
+}
+#headerWrapperv3.scrolled-10 .nav-bar-logo-blue,
+#headerWrappervITS.scrolled-10 .nav-bar-logo-blue {
+  display: flex !important;
+}
+</style>
+<script>
+window.addEventListener('load', function () {
+  const header = document.getElementById('headerWrappervITS');
+  const content = document.querySelector('main');
+  const nBar0 = header ? header.querySelector('.n-bar0') : null;
+  if (!header) return;
+  let lastScrollY = window.scrollY;
+  let ticking = false;
+  window.addEventListener('scroll', function () {
+    if (!ticking) {
+      window.requestAnimationFrame(function () {
+        const isMobile = window.innerWidth <= 767;
+        const isTablet = window.innerWidth <= 1200;
+        const currentScrollY = window.scrollY;
+
+        // --- Original hide/show nav logic (unchanged) ---
+        if (currentScrollY > lastScrollY && currentScrollY > 50) {
+          if (!window.popupNavOpen) {  // Check popup state once at the top
+            header.classList.add('nav-hidden');
+            if (isMobile) {
+              content.classList.add('nav-hidden-content-mobile');
+              content.classList.remove('nav-hidden-content-tablet');
+              content.classList.remove('nav-hidden-content');
+            } else if (isTablet) {
+              content.classList.add('nav-hidden-content-tablet');
+              content.classList.remove('nav-hidden-content-mobile');
+              content.classList.remove('nav-hidden-content');
+            } else {
+              content.classList.add('nav-hidden-content');
+              content.classList.remove('nav-hidden-content-tablet');
+              content.classList.remove('nav-hidden-content-mobile');
+            }
+          }
+        } else {
+          header.classList.remove('nav-hidden');
+          content.classList.remove('nav-hidden-content');
+          content.classList.remove('nav-hidden-content-tablet');
+          content.classList.remove('nav-hidden-content-mobile');
+        }
+
+        // --- New: toggle scrolled-10 state past 10px, independent of direction ---
+        if (currentScrollY > 10) {
+          header.classList.add('scrolled-10');
+          if (nBar0) nBar0.classList.add('scrolled-10');
+        } else {
+          header.classList.remove('scrolled-10');
+          if (nBar0) nBar0.classList.remove('scrolled-10');
+        }
+
+        lastScrollY = currentScrollY;
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+});
+</script>
+
+
+
+<!---Code 2 -->
+<div class="menu-btn" id="menu-trigger">
+    <div class="menu-btn__burger"></div>
+  </div>
+
+
+<style>
+.menu-btn {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: all .5s ease-in-out;
+  /* border: 3px solid #fff; */
+}
+.menu-btn__burger {
+  width: 25px;
+  height: 3px;
+  background: #ffffff;
+  border-radius: 3px;
+  transition: all .5s ease-in-out;
+}
+.menu-btn__burger::before,
+.menu-btn__burger::after {
+  content: '';
+  position: absolute;
+  width: 25px;
+  height: 3px;
+  background: #ffffff;
+  border-radius: 5px;
+  transition: all .5s ease-in-out;
+}
+.menu-btn__burger::before {
+  transform: translateY(-8px);
+}
+.menu-btn__burger::after {
+  transform: translateY(8px);
+}
+/* ANIMATION */
+.menu-btn.open .menu-btn__burger {
+  transform: translateX(0px);
+  background: transparent;
+
+}
+/* Code 1's scrolled-10 rule (#headerWrapperv3/#headerWrappervITS.scrolled-10
+   .menu-btn__burger) forces the middle bar's background back to #172643
+   with !important, which otherwise wins over the rule above once the page
+   is scrolled past 10px. This matches or beats that specificity so the
+   middle bar actually goes transparent when the menu is open. */
+:is(#headerWrappervITS).scrolled-10 .menu-btn.open .menu-btn__burger {
+  background: transparent !important;
+}
+
+/* Same conflict as above, but for the other elements Code 1's
+   scrolled-10 state locks with !important: the burger's outer
+   lines, the logo swap, and the nav-bar background. These key off
+   the header's own "menu-open" class (toggled in the script below)
+   instead of .menu-btn.open, since the logo/nav-bar elements aren't
+   descendants of .menu-btn. Applies regardless of scroll position,
+   and still wins over the scrolled-10 rules when both are active. */
+:is(#headerWrappervITS).menu-open .menu-btn__burger::before,
+:is(#headerWrappervITS).menu-open .menu-btn__burger::after {
+  background: #ffffff !important;
+}
+
+:is(#headerWrappervITS).menu-open .nav-bar-logo-white.nav-bar-logo-white {
+  display: flex !important;
+}
+:is(#headerWrappervITS).menu-open .nav-bar-logo-blue.nav-bar-logo-blue {
+  display: none !important;
+}
+
+:is(#headerWrappervITS).menu-open .n-bar0 {
+  background-color: #172643 !important;
+}
+
+.menu-btn.open .menu-btn__burger::before {
+  transform: rotate(45deg) ;
+}
+.menu-btn.open .menu-btn__burger::after {
+  transform: rotate(-45deg) ;
+}
+</style>
+
+<script>
+    window.popupNavOpen = false;  // Explicitly on window
+
+    const menuBtn = document.querySelector('.menu-btn');
+    const menuHeader = document.getElementById('headerWrappervITS');
+    let menuOpen = false;
+
+    function closeMenu() {
+      menuBtn.classList.remove('open');
+      if (menuHeader) menuHeader.classList.remove('menu-open');
+      menuOpen = false;
+      window.popupNavOpen = false;
+      // elementorProFrontend.modules.popup.closePopup() reads its own
+      // internally-tracked event and throws if called directly with
+      // arbitrary args, so instead we click Elementor's own close
+      // button (.dialog-close-button) - the same thing a user clicking
+      // the popup's X would trigger, which is already known to work.
+      const closeBtn = document.querySelector('.dialog-close-button');
+      if (closeBtn) closeBtn.click();
+    }
+    // Exposed so other snippets (e.g. Code 3's invest buttons, which
+    // can live inside this same popup) can close this popup too.
+    window.closeMobileMenu = closeMenu;
+
+    menuBtn.addEventListener('click', () => {
+      if (!menuOpen) {
+        menuBtn.classList.add('open');
+        if (menuHeader) menuHeader.classList.add('menu-open');
+        menuOpen = true;
+        window.popupNavOpen = true;
+        elementorProFrontend.modules.popup.showPopup({ id: 807 });
+      } else {
+        closeMenu();
+      }
+    });
+
+    // Clicking a link inside the mobile menu (#menu-mobile-menu is the
+    // <ul>, links are <a href="#section"> inside its <li> items) closes
+    // the popup and resets the burger/header state.
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('#menu-mobile-menu a')) {
+        closeMenu();
+      }
+    });
+</script>
+
+
+<!---Code 3 -->
+<style>
+/* ======================================================
+   1. HubSpot Form Global Resets & Styling
+   ====================================================== */
+	
+[data-hsfc-id=Renderer] .hsfc-PhoneInput:not(.hsfc-PhoneInput--rtl) .hsfc-PhoneInput__FlagAndCaret {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}	
+	
+.hsfc-CheckboxFieldGroup__Options {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 10px; 
+}
+
+.hsfc-CheckboxFieldGroup__Options > div {
+    display: flex;
+    align-items: center;
+}	
+
+.form-title {
+    text-align: center;
+    font-family: "DM Serif Display", serif;
+    font-size: clamp(1rem, 1.25vw, 1.5rem);
+    margin-bottom: 1rem;
+}
+
+/* ======================================================
+   2. Overlay Containers (The Background)
+   ====================================================== */
+.container-sticky-note-general,
+.container-sticky-note-kredit,
+.container-sticky-note-ejendomme,
+.container-sticky-note-fintech,
+.container-fa-invest1,
+.container-fa-invest2,
+.container-gen-admis1,
+.container-vk-magz1,
+.container-events-sub1,
+.container-fa-invest-vkmf,
+.container-fa-invest-srdlh,
+.container-fa-invest-sr,
+.container-fa-invest-seeres,
+.container-fa-invest-vkboliger,
+.container-fa-invest-vkinvest {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;                  
+    justify-content: center;
+    /* align-items: flex-start ensures the top of the form is reachable when zoomed */
+    align-items: center; 
+    background-color: rgba(0,0,0,0.5);
+    z-index: 999999 !important;
+    /* overflow-y: auto allows the background to scroll if the form is taller than the screen */
+    overflow-y: auto; 
+    padding: 40px 1rem;
+    box-sizing: border-box;
+}
+
+/* Show overlay when the .open class is added via JavaScript */
+.container-sticky-note-general.open,
+.container-sticky-note-kredit.open,
+.container-sticky-note-ejendomme.open,
+.container-sticky-note-fintech.open,
+.container-fa-invest1.open,
+.container-fa-invest2.open,
+.container-gen-admis1.open,
+.container-vk-magz1.open,
+.container-events-sub1.open,
+.container-fa-invest-vkmf.open,
+.container-fa-invest-srdlh.open,
+.container-fa-invest-sr.open,
+.container-fa-invest-seeres.open,
+.container-fa-invest-vkboliger.open,
+.container-fa-invest-vkinvest.open {
+    display: flex !important;
+}
+
+/* Button cursor styling */
+.sticky-note-general-btn,
+.sticky-note-kredit-btn,
+.sticky-note-ejendomme-btn,
+.sticky-note-fintech-btn,
+.fa-invest1-btn,
+.fa-invest2-btn,
+.gen-admis1-btn,
+.vk-magz1-btn,
+.events-sub1-btn,
+.fa-invest-vkmf-btn,
+.fa-invest-srdlh-btn, 
+.fa-invest-sr-btn,
+.fa-invest-seeres-btn,
+.fa-invest-vkboliger-btn,
+.fa-invest-vkinvest-btn {
+    cursor: pointer;
+}	
+	
+/* Prevent body from scrolling when modal is open */
+body.no-scroll {
+    overflow: hidden;
+}
+
+/* ======================================================
+   3. Form Script (The Modal Box)
+   ====================================================== */
+.form-script {
+    width: 50%;
+    min-width: 300px;
+    max-width: 1000px;
+    height: 100vh;
+    min-height: 300px;
+    /* Changed from 800px to 90vh to adapt to 150% zoom and smaller screens */
+    max-height: 100vh;
+    background-color: #172643;
+    /* Ensures the form itself has a scrollbar if the HubSpot content is long */
+    overflow-y: auto !important;
+    padding: 2rem;
+    box-sizing: border-box;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* Close button positioning */
+.close-button {
+    position: absolute;   
+    top: 15px;             
+    right: 15px;          
+    width: 24px;          
+    height: 24px;         
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* ======================================================
+   4. Responsive Adjustments (Tablet & Mobile)
+   ====================================================== */
+
+/* Tablet width adjustment */
+@media (max-width: 1200px) {
+    .form-script {
+        width: 60%;
+    }
+}
+
+/* Mobile Full-Screen adjustment */
+@media (max-width: 767px) {
+    .container-sticky-note,
+		.container-sticky-note-kredit,
+		.container-sticky-note-ejendomme,
+		.container-sticky-note-fintech,
+    .container-fa-invest1,
+    .container-fa-invest2,
+    .container-gen-admis1,
+    .container-vk-magz1,
+    .container-events-sub1,
+		.container-fa-invest-vkmf,
+		.container-fa-invest-srdlh,
+		.container-fa-invest-sr,
+		.container-fa-invest-seeres,
+		.container-fa-invest-vkboliger,
+		.container-fa-invest-vkinvest {
+        padding: 0;	
+    }
+
+    .form-script {
+        width: 100vw !important;
+        height: 100vh !important;
+        min-width: 100vw !important;
+        min-height: 100vh !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+        margin-top: 0px !important;
+        overflow-y: auto !important;
+    }
+}
+
+</style>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const BODY_NO_SCROLL_CLASS = "no-scroll";
+	
+	const headerWrapper = document.getElementById("headerWrapper");
+
+  // ======================================================
+  // 1. Object: button class → container class
+  // ======================================================
+  const buttonClassToContainerClass = {
+    "events-sub1-btn": "container-events-sub1",
+    "vk-magz1-btn": "container-vk-magz1", 
+    "gen-admis1-btn": "container-gen-admis1",
+    "fa-invest2-btn": "container-fa-invest2",
+    "fa-invest1-btn": "container-fa-invest1",
+		"sticky-note-general-btn": "container-sticky-note-general",
+		"sticky-note-kredit-btn": "container-sticky-note-kredit",
+		"sticky-note-ejendomme-btn": "container-sticky-note-ejendomme",
+		"sticky-note-fintech-btn": "container-sticky-note-fintech",
+		"fa-invest-vkmf-btn": "container-fa-invest-vkmf",
+		"fa-invest-srdlh-btn": "container-fa-invest-srdlh",
+		"fa-invest-sr-btn": "container-fa-invest-sr",
+		"fa-invest-seeres-btn": "container-fa-invest-seeres",
+		"fa-invest-vkboliger-btn": "container-fa-invest-vkboliger",
+		"fa-invest-vkinvest-btn": "container-fa-invest-vkinvest"
+  };
+	
+	
+
+  // ======================================================
+  // 2. Function to open a container
+  // ======================================================
+  function openContainer(containerClass) {
+    const container = document.querySelector(`.${containerClass}`);
+
+    // ✅ check mobile HERE
+    if (window.innerWidth < 767 && headerWrapper) {
+      headerWrapper.classList.add("z-index-0");
+    }		
+		
+		
+    if (container) {
+      container.classList.add("open");
+      document.body.classList.add(BODY_NO_SCROLL_CLASS);
+    } 
+  }
+
+  // ======================================================
+  // 3. Add click listeners to each button class
+  // ======================================================
+  // Delegated on document (not querySelectorAll+forEach at load time)
+  // so this still works for buttons that don't exist in the DOM yet
+  // at DOMContentLoaded - e.g. a copy of the button living inside an
+  // Elementor popup that's only rendered/moved into the page when the
+  // popup is first opened.
+  const buttonSelector = Object.keys(buttonClassToContainerClass)
+    .map(c => `.${c}`)
+    .join(', ');
+
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest(buttonSelector);
+    if (!btn) return;
+
+    const buttonClass = Object.keys(buttonClassToContainerClass)
+      .find(c => btn.classList.contains(c));
+    if (buttonClass) {
+      openContainer(buttonClassToContainerClass[buttonClass]);
+      // Close the mobile-menu popup from Code 2, in case this button
+      // was clicked from inside it.
+      if (typeof window.closeMobileMenu === 'function') {
+        window.closeMobileMenu();
+      }
+    }
+  });
+
+  // ======================================================
+  // 4. Close button logic (delegated, same reasoning as above)
+  // ======================================================
+  document.addEventListener('click', function (e) {
+    const closeBtn = e.target.closest('.close-button');
+    if (!closeBtn) return;
+
+    // find parent container-* class
+    const container = closeBtn.closest("[class*='container-']");
+    if (container) {
+      container.classList.remove("open");
+      document.body.classList.remove(BODY_NO_SCROLL_CLASS);
+
+      // ✅ check mobile HERE too
+      if (window.innerWidth < 767 && headerWrapper) {
+        headerWrapper.classList.remove("z-index-0");
+      }
+    }
+  });
+});
+</script>
