@@ -1,0 +1,144 @@
+<style>
+  .timeline {
+    position: relative;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 84px 20px 1fr;
+    column-gap: 20px;
+    padding-bottom: 0px;
+    /* 0 = just-arrived small size, 1 = full size; driven by scroll
+       (see the script at the bottom), defaults to "full size" so
+       the page still looks right if JS doesn't run */
+    --progress: 1;
+    background-color: white;
+  }
+
+  .timeline-year,
+  .timeline-content {
+    align-self: start;
+  }
+
+  .timeline-year {
+    --big: clamp(2rem, 2.49vw, 3.75rem);
+    margin: 0;
+    color: #121428;
+    font-family: "DM Serif Display", serif;
+    font-size: var(--big);
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;
+    text-align: right;
+    /* starts ~6px smaller than its resting size and scales up to
+       full size as the row scrolls in, and back down in reverse */
+    transform: scale(calc((var(--big) - (1 - var(--progress)) * 12px) / var(--big)));
+    transform-origin: right center;
+  }
+
+  .timeline-marker {
+    position: relative;
+    align-self: stretch;
+    display: flex;
+    justify-content: center;
+  }
+
+  .timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #121428;
+    position: relative;
+    z-index: 2;
+    /* centers the dot on the year's line box (line-height: 1, so
+       the box height equals the year's font-size exactly) */
+    margin-top: calc(clamp(2rem, 2.49vw, 3.75rem) / 2 - 5px);
+    flex: 0 0 auto;
+    /* same start-small, grow-to-full-size behavior as the text */
+    transform: scale(calc(0.6 + 0.4 * var(--progress)));
+  }
+
+  /* runs the full height of the row, passing behind the dot, so it
+     joins seamlessly with the previous row's line above it */
+  .timeline-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: #000;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+
+  /* the first row has no line above it to join, so its line starts
+     at its own dot instead of the top of the row */
+  .timeline-item.first-row .timeline-line {
+    top: calc(clamp(2rem, 2.49vw, 3.75rem) / 2);
+  }
+
+  .timeline-title {
+    --big: clamp(1.25rem, 1.87vw, 2.812rem);
+    margin: 0 0 8px 0;
+    color: #121428;
+    font-family: "DM Serif Display", serif;
+    font-size: var(--big);
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;
+    transform: scale(calc((var(--big) - (1 - var(--progress)) * 4px) / var(--big)));
+    transform-origin: left top;
+  }
+
+  .timeline-desc {
+    --big: clamp(1rem, 1.04vw, 1.562rem);
+    margin: 0;
+    color: #121428;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: var(--big);
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    padding-bottom: 40px;
+    transform: scale(calc((var(--big) - (1 - var(--progress)) * 2px) / var(--big)));
+    transform-origin: left top;
+  }
+
+  .timeline-item.last-row .timeline-desc {
+    padding-bottom: 0;
+  }
+</style>
+
+
+
+<script>
+(function () {
+  var STICKY_TOP = 50;  // must match .timeline-item's `top`
+  var RAMP = 250;        // px of scroll a row takes to grow to full size
+  var items = document.querySelectorAll('.timeline-item');
+  var ticking = false;
+
+  function update() {
+    items.forEach(function (item) {
+      var top = item.getBoundingClientRect().top;
+      var progress = 1 - (top - STICKY_TOP) / RAMP;
+      progress = Math.max(0, Math.min(1, progress));
+      item.style.setProperty('--progress', progress);
+    });
+    ticking = false;
+  }
+
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  update();
+})();
+</script>
